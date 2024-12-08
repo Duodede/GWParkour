@@ -19,7 +19,7 @@ public class SaveManager : MonoBehaviour
         nameInput.text = "测试地图1";
         Load();
     }
-    public void GetBuilding()
+    public void GetBuilding()//获取存档地图
     {
         mapdatas.Clear();
         for (int i = 0; i < transform.childCount; i++)
@@ -47,7 +47,14 @@ public class SaveManager : MonoBehaviour
     public void Save()//保存地图
     {
         GetBuilding();
-        fileName = nameInput.text;
+        if (CheatSystem.isTestPadOn)
+        {
+            fileName = nameInput.text;
+        }
+        else
+        {
+            //记得及时把这部分加上
+        }
         foreach (Map map in maps)
         {
             if(fileName == map.name)
@@ -65,7 +72,10 @@ public class SaveManager : MonoBehaviour
     public void Load()//加载地图
     {
         maps = SaveSystemByJSON.LoadDataForGame<List<Map>>();
-        fileName = nameInput.text;
+        if (CheatSystem.isTestPadOn)
+        {
+            fileName = nameInput.text;
+        }
         Map currentMap = null;
         foreach (Map map in maps)
         {
