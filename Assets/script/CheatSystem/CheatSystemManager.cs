@@ -9,6 +9,8 @@ public class CheatSystemManager : MonoBehaviour
     public void Start()
     {
         CheatSystem.manager = this;
+        m_isTestPadOn = testPad.activeSelf;
+        CheatSystem.isTestPadOn = m_isTestPadOn;
     }
     private void Update()
     {

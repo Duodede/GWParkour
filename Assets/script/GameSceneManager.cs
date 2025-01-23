@@ -22,6 +22,7 @@ public class GameSceneManager : MonoBehaviour
     }
     IEnumerator Loading()
     {
+        loadingValue.gameObject.SetActive(true);
         while(load < 100)
         {
             if(Random.Range(0,2) == 0)

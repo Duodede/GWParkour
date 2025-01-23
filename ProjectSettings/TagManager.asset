@@ -7,6 +7,7 @@ TagManager:
   - Part
   - PlayerInfo
   - BgUninteractive
+  - StartPoint
   layers:
   - Default
   - TransparentFX
