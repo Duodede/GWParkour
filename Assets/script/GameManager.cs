@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.UI;
+using System.IO;
+using System.Linq;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,10 +27,14 @@ public class GameManager : MonoBehaviour
     private Button startButton;
     [Header("Menu")]
     public GameObject menu;
+    public GameObject levelInfoCardPrefab;
+    public GameObject content;
+    public GameObject deleteConfirmNotice;
     private void Start()
     {
         startButton = startButtonUI.GetComponent<Button>();
         Manager.manager = this;
+        ReadAllGameData();
     }
     private void Update()
     {
@@ -86,11 +93,41 @@ public class GameManager : MonoBehaviour
             saveManager.Save();
             saveManager.DeleteBuildings();
         }
+        ReadAllGameData();
+    }
+    public void ReadAllGameData()
+    {
+        for (int i = 0; i < content.transform.childCount; i++)
+        {
+            Destroy(content.transform.GetChild(i).gameObject);
+        }
+        string path = Directory.GetCurrentDirectory()+@"/GameData";
+        string[] files = Directory.GetFiles(path, "*.txt", SearchOption.TopDirectoryOnly);
+        string[] textures = Directory.GetFiles(path + "/ScreenshotOfSavedGame", "*.png", SearchOption.TopDirectoryOnly);
+        foreach(string filePath in files)
+        {
+            LevelInofCard card = Instantiate(levelInfoCardPrefab, content.transform).GetComponent<LevelInofCard>();
+            foreach(string texturePath in textures)
+            {
+                if (texturePath.Contains(Path.GetFileNameWithoutExtension(filePath)))
+                {
+                    var bytes = File.ReadAllBytes(texturePath);
+                    Texture2D texture2D = new Texture2D(Screenshot.manager.rt.width, Screenshot.manager.rt.height);
+                    texture2D.LoadImage(bytes);
+                    card.image.texture = texture2D;
+                    break;
+                }
+            }
+            card.content = content.transform;
+            card.levelName = Path.GetFileNameWithoutExtension(filePath);
+            card.levelNameText.text = card.levelName;
+        }
     }
 }
 public class Manager
 {
     public static GameManager manager;
+    public static SaveManager saveManager;
 }
 
 

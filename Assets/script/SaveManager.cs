@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using UnityEditor;
+using System.Diagnostics.Contracts;
 
 public class SaveManager : MonoBehaviour
 {
@@ -14,11 +16,27 @@ public class SaveManager : MonoBehaviour
     public string fileName;
     public BuildManager bm;
     public InputField pauseMenuSaveInputField;
+    public string screenshotFolderPath;
+    public string fileToDelete;
     public void Start()
     {
-        SaveSystemByJSON.SetFilePath();
-        nameInput.text = "测试地图2";
-        fileName = "测试地图2";
+        Manager.saveManager = this;
+        SaveSystemByJSON.SetFilePath("");
+        //创建存档文件夹
+        string folderPath = SaveSystemByJSON.filePath+@"\GameData\";
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+        //创建存档截图文件夹
+        screenshotFolderPath = SaveSystemByJSON.filePath + @"\GameData\ScreenshotOfSavedGame";
+        if(!Directory.Exists(screenshotFolderPath))
+        {
+            Directory.CreateDirectory(screenshotFolderPath);
+        }
+        SaveSystemByJSON.SetFilePath(@"\GameData\");
+        nameInput.text = "测试地图3";
+        fileName = "测试地图3";
         Load();
     }
     public void GetBuilding()//获取存档地图
@@ -49,6 +67,10 @@ public class SaveManager : MonoBehaviour
     public void Save()//保存地图
     {
         GetBuilding();
+        if(fileName == null || mapdatas.Count == 0)
+        {
+            return;
+        }
         if (CheatSystem.isTestPadOn)
         {
             fileName = nameInput.text;
@@ -65,20 +87,20 @@ public class SaveManager : MonoBehaviour
                 break;
             }
         }
-        Map currentMap = new Map(fileName, mapdatas);
-        maps.Add(currentMap);
-        SaveSystemByJSON.SaveDataFromGame<List<Map>>(maps);
+        Map currentMap = new Map(fileName, mapdatas,0);
+        SaveSystemByJSON.SaveDataFromGame<Map>(currentMap,fileName);
+        Screenshot.Capture(screenshotFolderPath+"/"+fileName+".png");
         //mapdatas.Clear();
         //maps.Clear();
     }
     public void Load()//加载地图
     {
-        maps = SaveSystemByJSON.LoadDataForGame<List<Map>>();
         if (CheatSystem.isTestPadOn)
         {
             fileName = nameInput.text;
         }
         Map currentMap = null;
+        currentMap = SaveSystemByJSON.LoadDataForGame<Map>(fileName);
         foreach (Map map in maps)
         {
             if (fileName == map.name)
@@ -106,6 +128,12 @@ public class SaveManager : MonoBehaviour
             Destroy(transform.GetChild(i).gameObject);
         }
     }
+    public void Delete()
+    {
+        File.Delete(Path.Combine(SaveSystemByJSON.filePath, fileToDelete+".txt"));
+        File.Delete(Path.Combine(screenshotFolderPath, fileToDelete+".png"));
+        Manager.manager.ReadAllGameData();
+    }
     public void Quit()
     {
         Application.Quit();
@@ -132,9 +160,11 @@ public class Map
 {
     public string name;
     public List<SaveUnit> datas;
-    public Map(string n, List<SaveUnit> d)
+    public long id;
+    public Map(string n, List<SaveUnit> d,long id)
     {
         name = n;
         datas = d;
+        this.id = id;
     }
 }

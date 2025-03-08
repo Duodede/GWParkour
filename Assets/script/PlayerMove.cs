@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    [Header("ËÙ¶È")]
+    [Header("ï¿½Ù¶ï¿½")]
     public float rawSpeed;
     public float factor;
     public float speed;
     public float jumpSpeed;
-    [Header("ÌøÔ¾¸ß¶È")]
+    [Header("ï¿½ï¿½Ô¾ï¿½ß¶ï¿½")]
     public float secondJumpDistance;
     Rigidbody2D rg;
     Vector2 movement;
@@ -29,13 +29,13 @@ public class PlayerMove : MonoBehaviour
     }
     void Update()
     {
-        //ÊÊÅäËÙ¶È
+        //ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
         speed = rawSpeed * factor;
-        //¶þ¶ÎÌø
-        movement = new Vector2(Input.GetAxis("Horizontal") * speed, rg.velocity.y + BoolToInt(Input.GetButtonDown("Jump")) * jumpSpeed * (BoolToInt(isGrounded))) ;
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        movement = new Vector2(Input.GetAxis("Horizontal") * speed, rg.linearVelocity.y + BoolToInt(Input.GetButtonDown("Jump")) * jumpSpeed * (BoolToInt(isGrounded))) ;
         if(!isGrounded&&jumpCount == 0)
         {
-            movement = new Vector2(Input.GetAxis("Horizontal") * speed, rg.velocity.y + BoolToInt(Input.GetButtonDown("Jump")) * jumpSpeed * (BoolToInt(isSecondJump)));     
+            movement = new Vector2(Input.GetAxis("Horizontal") * speed, rg.linearVelocity.y + BoolToInt(Input.GetButtonDown("Jump")) * jumpSpeed * (BoolToInt(isSecondJump)));     
         }
         if(isGrounded)
         {
@@ -49,8 +49,8 @@ public class PlayerMove : MonoBehaviour
                 jumpCount = 0;
             }
         }
-        rg.velocity = movement;
-        //ÅÐ¶¨µØÃæ
+        rg.linearVelocity = movement;
+        //ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½
         downRay = new Ray2D(this.transform.position, Vector2.down);
         hitInfo = Physics2D.Raycast(downRay.origin, downRay.direction);
         isGrounded = hitInfo.collider != null && hitInfo.distance <= secondJumpDistance;
@@ -58,7 +58,7 @@ public class PlayerMove : MonoBehaviour
         //Debug.Log(hitInfo.distance);
         isMoving = movement.magnitude != 0;
         SetUpAnimator();
-        //Íæ¼Ò·½Ïò±ä»¯
+        //ï¿½ï¿½Ò·ï¿½ï¿½ï¿½ä»¯
         if(Input.GetAxisRaw("Horizontal") != 0)
         {
             spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") < 0;

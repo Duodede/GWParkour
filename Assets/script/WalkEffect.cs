@@ -19,11 +19,11 @@ public class WalkEffect : MonoBehaviour
         if(collision.gameObject.TryGetComponent<Rigidbody2D>(out Rigidbody2D rg)&&!trigger)
         {
             //Debug.Log(collision.gameObject.tag);
-            if(rg.velocity.magnitude != 0)
+            if(rg.linearVelocity.magnitude != 0)
             {
                 effect.active = true;
                 effect.transform.position = new Vector3(rg.transform.position.x, this.transform.position.y + height, 0);
-                particle.emissionRate = strength* (rg.velocity.magnitude/10f);
+                particle.emissionRate = strength* (rg.linearVelocity.magnitude/10f);
             }
             else
             {
@@ -43,11 +43,11 @@ public class WalkEffect : MonoBehaviour
         if (collision.gameObject.TryGetComponent<Rigidbody2D>(out Rigidbody2D rg) && trigger)
         {
             //Debug.Log(collision.gameObject.tag);
-            if (rg.velocity.magnitude != 0)
+            if (rg.linearVelocity.magnitude != 0)
             {
                 effect.active = true;
                 effect.transform.position = new Vector3(rg.transform.position.x, this.transform.position.y + height, 0);
-                particle.emissionRate = strength * (rg.velocity.magnitude / 10f);
+                particle.emissionRate = strength * (rg.linearVelocity.magnitude / 10f);
             }
             else
             {
