@@ -5,6 +5,7 @@ using UnityEngine;
 public class ChangeHealthPoint : MonoBehaviour
 {
     public int changedValue;
+    public Transform cameraPos;
     PlayerInfo pl;
     public void ChangeHealth()
     {
@@ -13,6 +14,10 @@ public class ChangeHealthPoint : MonoBehaviour
     public void Start()
     {
         pl = GameObject.FindWithTag("PlayerInfo").GetComponent<PlayerInfo>();
+    }
+    public void Update()
+    {
+        this.transform.position = new Vector3(cameraPos.position.x,cameraPos.position.y-100f,0);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {

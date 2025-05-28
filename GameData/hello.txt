@@ -1,0 +1,1 @@
+{"name":"hello","id":"3","datas":[{"partName":"ground_brick","x":0.0,"y":0.0,"z":0.0},{"partName":"ground_stairs","x":-2.0,"y":0.0,"z":0.0},{"partName":"water","x":2.0,"y":0.0,"z":0.0},{"partName":"起点","x":0.0,"y":2.0,"z":0.0}]}

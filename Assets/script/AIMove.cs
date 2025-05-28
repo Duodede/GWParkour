@@ -25,7 +25,7 @@ public class AIMove : MonoBehaviour
         StartCoroutine(FindWay());
     }
     ///<summary>
-    /// ¼ì²âÊÇ·ñÓÐ¿ÉÐÐ·½¿é
+    /// ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ð¿ï¿½ï¿½Ð·ï¿½ï¿½ï¿½
     /// </summary>
     private bool IfBricksMoveable(Vector2 dir)
     {
@@ -37,16 +37,16 @@ public class AIMove : MonoBehaviour
     private string GetEnvironment(Vector2 dir)
     {
         string tag;
-        //ÉäÏß¼ì²â×óÓÒ·½¿é
+        //ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½Ò·ï¿½ï¿½ï¿½
         ray = Physics2D.Raycast(new Vector3(transform.position.x, transform.position.y-1.5f,0), dir,2);
-        //·µ»Ø¶ÁÈ¡½á¹û
+        //ï¿½ï¿½ï¿½Ø¶ï¿½È¡ï¿½ï¿½ï¿½
         tag = ray.collider?.gameObject.name;
         //Debug.Log(tag);
         return tag;
     }
     IEnumerator Move(Vector2 dir)
     {
-        rb.velocity = new Vector2(dir.x * moveSpeed, rb.velocity.y);
+        rb.linearVelocity = new Vector2(dir.x * moveSpeed, rb.linearVelocity.y);
         if(dir.x == 1)
         {
             transform.localScale = new Vector3(-1, 1, 1);

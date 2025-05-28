@@ -28,11 +28,11 @@ public static class SaveSystemByJSON
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="saveObject"></param>
-    public static void SaveDataFromGame<T>(T saveObject)
+    public static void SaveDataFromGame<T>(T saveObject,string fileName)
     {
-        SetFilePath();
+        SetFilePath(@"\GameData\");
         string toJsonString = JsonConvert.SerializeObject(saveObject);
-        System.IO.File.WriteAllText(filePath + @"\saveWithGame.txt", toJsonString);
+        System.IO.File.WriteAllText(filePath + fileName+".txt", toJsonString);
         Debug.Log("保存成功！");
     }
     /// <summary>
@@ -40,10 +40,9 @@ public static class SaveSystemByJSON
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T LoadDataForGame<T>()
+    public static T LoadDataForGame<T>(string fileName)
     {
-
-        T TheGameObject = JsonConvert.DeserializeObject<T>(System.IO.File.ReadAllText(filePath + @"\saveWithGame.txt"));
+        T TheGameObject = JsonConvert.DeserializeObject<T>(System.IO.File.ReadAllText(filePath + fileName+".txt"));
         return TheGameObject;
     }
     /// <summary>
@@ -59,9 +58,9 @@ public static class SaveSystemByJSON
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     //保存路径添加文件夹
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    public static void SetFilePath()
+    public static void SetFilePath(string path)
     {
-        filePath = System.IO.Directory.GetCurrentDirectory();
+        filePath = System.IO.Directory.GetCurrentDirectory()+path;
     }
     /*代码示例
      *  //保存
