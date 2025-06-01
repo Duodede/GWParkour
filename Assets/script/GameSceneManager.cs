@@ -36,4 +36,12 @@ public class GameSceneManager : MonoBehaviour
         SceneManager.LoadScene(targetSceneName);
         yield break;
     }
+    public void quitGame()
+    {
+        Application.Quit();
+    }
+    public void ChangeScene(string name)
+    {
+        SceneManager.LoadScene(name);
+    }
 }

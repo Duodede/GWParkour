@@ -132,10 +132,6 @@ public class GameManager : MonoBehaviour
             card.levelNameText.text = card.levelName;
         }
     }
-    public void changeScene(string name)
-    {
-        SceneManager.LoadScene(name);
-    }
 }
 
 public class Manager

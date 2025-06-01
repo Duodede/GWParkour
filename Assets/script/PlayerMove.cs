@@ -39,22 +39,22 @@ public class PlayerMove : MonoBehaviour
         }
         if(isGrounded)
         {
+            if(jumpCount != 0)
+            {
+                Debug.Log(jumpCount);
+            }
             jumpCount = 0;
         }
         if(Input.GetButtonDown("Jump"))
         {
             jumpCount++;
-            if(jumpCount > 1)
-            {
-                jumpCount = 0;
-            }
         }
-        rg.linearVelocity = movement;
+        rg.linearVelocity = movement;   
         //�ж�����
         downRay = new Ray2D(this.transform.position, Vector2.down);
         hitInfo = Physics2D.Raycast(downRay.origin, downRay.direction);
         isGrounded = hitInfo.collider != null && hitInfo.distance <= secondJumpDistance;
-        isSecondJump = hitInfo.distance > secondJumpDistance && hitInfo.distance <= 4*secondJumpDistance;
+        isSecondJump = hitInfo.distance > secondJumpDistance && hitInfo.distance <= 4*secondJumpDistance && jumpCount <=1;
         //Debug.Log(hitInfo.distance);
         isMoving = movement.magnitude != 0;
         SetUpAnimator();
