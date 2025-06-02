@@ -14,6 +14,8 @@ public class SaveManager : MonoBehaviour
     public List<Map> maps;
     public InputField nameInput;
     public string fileName;
+    public GameObject wrongTab;
+    public Text WrongMessage;
     public BuildManager bm;
     public InputField pauseMenuSaveInputField;
     public string screenshotFolderPath;
@@ -35,9 +37,6 @@ public class SaveManager : MonoBehaviour
             Directory.CreateDirectory(screenshotFolderPath);
         }
         SaveSystemByJSON.SetFilePath(@"\GameData\");
-        nameInput.text = "测试地图3";
-        fileName = "测试地图3";
-        Load();
     }
     public void GetBuilding()//获取存档地图
     {
@@ -45,7 +44,7 @@ public class SaveManager : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             string name = transform.GetChild(i).gameObject.name;
-            SaveUnit su = new SaveUnit(name.Remove(name.Length - 7, 7), transform.GetChild(i).position);//添加地图建筑
+            SaveUnit su = new SaveUnit(name.Remove(name.Length - 7, 7), transform.GetChild(i).position,GetFlipX(transform.GetChild(i).gameObject));//添加地图建筑
             mapdatas.Add(su);
         }
     }
@@ -58,19 +57,21 @@ public class SaveManager : MonoBehaviour
                 if (su.partName == part.name)
                 {
                     GameObject newPart = Instantiate(part, new Vector3(su.x, su.y, su.z), transform.rotation, transform);
+                    newPart.transform.localScale = new Vector3(su.flipX, 1, 1);
                     bm.builtParts.Add(newPart);
                     break;
                 }
             }
         }
     }
-    public void Save()//保存地图
+    public void UseSave()
     {
+        Save(out bool flag);
+    }
+    public void Save(out bool IsSave)//保存地图
+    {
+        IsSave = false;
         GetBuilding();
-        if(fileName == null || mapdatas.Count == 0)
-        {
-            return;
-        }
         if (CheatSystem.isTestPadOn)
         {
             fileName = nameInput.text;
@@ -78,6 +79,19 @@ public class SaveManager : MonoBehaviour
         else
         {
             fileName = pauseMenuSaveInputField.text;
+        }
+        if (fileName == ""||fileName.Contains(" "))
+        {
+            wrongTab.SetActive(true);
+            WrongMessage.text = "存档名不正确";
+            return;
+        }
+        Debug.Log(fileName);
+        if (mapdatas.Count == 0)
+        {
+            wrongTab.SetActive(true);
+            WrongMessage.text = "不能保存空文件";
+            return;
         }
         foreach (Map map in maps)
         {
@@ -87,11 +101,12 @@ public class SaveManager : MonoBehaviour
                 break;
             }
         }
-        Map currentMap = new Map(fileName, mapdatas,0);
+        Map currentMap = new Map(fileName, mapdatas,"-1");
         SaveSystemByJSON.SaveDataFromGame<Map>(currentMap,fileName);
         Screenshot.Capture(screenshotFolderPath+"/"+fileName+".png");
         //mapdatas.Clear();
         //maps.Clear();
+        IsSave = true;
     }
     public void Load()//加载地图
     {
@@ -138,6 +153,10 @@ public class SaveManager : MonoBehaviour
     {
         Application.Quit();
     }
+    public float GetFlipX(GameObject target)
+    {
+        return target.transform.localScale.x;
+    }
 }
 
 [System.Serializable]
@@ -147,24 +166,26 @@ public class SaveUnit
     public float x;
     public float y;
     public float z;
-    public SaveUnit(string pn,Vector3 pos)
+    public float flipX;
+    public SaveUnit(string pn,Vector3 pos,float flipX)
     {
         partName = pn;
         x = pos.x;
         y = pos.y;
         z = pos.z;
+        this.flipX = flipX;
     }
 }
 [System.Serializable]
 public class Map
 {
     public string name;
+    public string id;
     public List<SaveUnit> datas;
-    public long id;
-    public Map(string n, List<SaveUnit> d,long id)
+    public Map(string n, List<SaveUnit> d,string i)
     {
         name = n;
         datas = d;
-        this.id = id;
+        id = i;
     }
 }

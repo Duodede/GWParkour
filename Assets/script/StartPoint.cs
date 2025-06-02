@@ -9,6 +9,7 @@ public class StartPoint : MonoBehaviour
     {
         gameManager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
         gameManager.startPos = transform;
+        gameManager.startPoint = transform;
     }
     void OnDistroy()
     {

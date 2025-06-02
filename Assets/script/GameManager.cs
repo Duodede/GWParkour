@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.IO;
 using System.Linq;
 using Unity.VisualScripting;
@@ -15,6 +16,8 @@ public class GameManager : MonoBehaviour
     public GameObject playerPrefab;
     public GameObject player;
     public Transform startPos;
+    public Transform startPoint;
+    public Transform lastCheckPoint;
     public Transform editorCameraAim;
     public CinemachineVirtualCamera vcam;
     public float vcamMoveSpeed;
@@ -30,26 +33,34 @@ public class GameManager : MonoBehaviour
     public GameObject levelInfoCardPrefab;
     public GameObject content;
     public GameObject deleteConfirmNotice;
+    [Header("CheckPoints")]
+    public List<GameObject> checkedCheckPoints;
     private void Start()
     {
         startButton = startButtonUI.GetComponent<Button>();
         Manager.manager = this;
+        StartCoroutine("Load");
+        menu.SetActive(true);
+    }
+    IEnumerator Load()
+    {
+        yield return new WaitForSeconds(1);
         ReadAllGameData();
     }
     private void Update()
     {
-        if(isEditMode)
+        if (isEditMode)
         {
             //set camera aim
             VCamraMove();
-            if(vcam.Follow != editorCameraAim)
+            if (vcam.Follow != editorCameraAim)
             {
                 vcam.Follow = editorCameraAim;
                 //vcam.LookAt = editorCameraAim;
             }
             startButton.interactable = startPos != null;
         }
-        else if(player != null)
+        else if (player != null)
         {
             //set camera aim
             if (vcam.Follow != player.transform)
@@ -59,13 +70,13 @@ public class GameManager : MonoBehaviour
             }
         }
         //set tools pad active
-        partsPadAni.SetBool("showPad",isEditMode&&isFileLoaded);
+        partsPadAni.SetBool("showPad", isEditMode && isFileLoaded);
     }
     public void StartPlaying()
     {
         if (startPos == null)
             return;
-        player = Instantiate(playerPrefab,startPos.position, startPos.rotation);
+        player = Instantiate(playerPrefab, startPos.position, startPos.rotation);
         playerInfo.ChangeHealthPoint(100);
         isEditMode = false;
     }
@@ -73,6 +84,16 @@ public class GameManager : MonoBehaviour
     {
         isEditMode = true;
         Destroy(player);
+        
+    }
+    public void ClearCheckPoints()
+    {
+        foreach (GameObject checkPoint in checkedCheckPoints)
+        {
+            checkPoint.GetComponent<CheckPointFlag>().SwitchFlagState(false);
+        }
+        checkedCheckPoints.Clear();
+        startPos = startPoint;
     }
     void VCamraMove()
     {
@@ -84,15 +105,17 @@ public class GameManager : MonoBehaviour
     }
     public void SetMenuActive(bool active)
     {
+        bool IsSave = false;
+        if (active)
+        {
+            saveManager.Save(out IsSave);
+            //saveManager.DeleteBuildings();
+        }
+        if (!IsSave&&active) return;
         isFileLoaded = !active;
         menu.SetActive(active);
         playerInfoUI.SetActive(!active);
         startButtonUI.SetActive(!active);
-        if(active)
-        {
-            saveManager.Save();
-            saveManager.DeleteBuildings();
-        }
         ReadAllGameData();
     }
     public void ReadAllGameData()
@@ -106,7 +129,7 @@ public class GameManager : MonoBehaviour
         string[] textures = Directory.GetFiles(path + "/ScreenshotOfSavedGame", "*.png", SearchOption.TopDirectoryOnly);
         foreach(string filePath in files)
         {
-            LevelInofCard card = Instantiate(levelInfoCardPrefab, content.transform).GetComponent<LevelInofCard>();
+            LevelInfoCard card = Instantiate(levelInfoCardPrefab, content.transform).GetComponent<LevelInfoCard>();
             foreach(string texturePath in textures)
             {
                 if (texturePath.Contains(Path.GetFileNameWithoutExtension(filePath)))
@@ -124,6 +147,7 @@ public class GameManager : MonoBehaviour
         }
     }
 }
+
 public class Manager
 {
     public static GameManager manager;

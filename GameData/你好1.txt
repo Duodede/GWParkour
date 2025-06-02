@@ -1,0 +1,1 @@
+{"name":"你好1","id":"4","datas":[{"partName":"起点","x":-2.0,"y":-2.0,"z":0.0},{"partName":"ground_brick","x":-2.0,"y":-4.0,"z":0.0},{"partName":"ground_brick","x":0.0,"y":-4.0,"z":0.0}]}

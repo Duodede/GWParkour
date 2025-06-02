@@ -45,6 +45,10 @@ public class BuildManager : MonoBehaviour
                 Destroy(prePart);
                 prePart = null;
             }
+            if(Input.GetKeyDown(KeyCode.O))
+            {
+                prePart.transform.localScale = new Vector3(prePart.transform.localScale.x*-1, 1, 1);
+            }
         }
         else
         {
