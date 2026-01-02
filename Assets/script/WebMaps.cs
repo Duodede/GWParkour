@@ -25,12 +25,13 @@ public class WebMaps : MonoBehaviour
     private void Start()
     {
         MapLoad();
+        SaveSystemByJSON.SetFilePath("/GameData/");
     }
     public void back()
     {
         if (state == false)
         {
-            SceneManager.LoadScene("StartScene");
+            SceneManager.LoadScene("SampleScene");
         }
         else if(state == true)
         {
@@ -317,6 +318,7 @@ public class WebMaps : MonoBehaviour
             {
                 Debug.Log("Ok");
                 panel.SetActive(false);
+                MapLoad();
             }
         }
     }

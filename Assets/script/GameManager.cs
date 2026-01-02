@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     public GameObject playerPrefab;
     public GameObject player;
     public Transform startPos;
+    public Transform startPoint;
+    public Transform lastCheckPoint;
     public Transform editorCameraAim;
     public CinemachineVirtualCamera vcam;
     public float vcamMoveSpeed;
@@ -26,11 +28,14 @@ public class GameManager : MonoBehaviour
     public GameObject playerInfoUI;
     public GameObject startButtonUI;
     private Button startButton;
+    public Button startFlagButton;
     [Header("Menu")]
     public GameObject menu;
     public GameObject levelInfoCardPrefab;
     public GameObject content;
     public GameObject deleteConfirmNotice;
+    [Header("CheckPoints")]
+    public List<GameObject> checkedCheckPoints;
     private void Start()
     {
         startButton = startButtonUI.GetComponent<Button>();
@@ -45,34 +50,44 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if(isEditMode)
+        if (isEditMode)
         {
             //set camera aim
             VCamraMove();
-            if(vcam.Follow != editorCameraAim)
+            if (vcam.Follow != editorCameraAim)
             {
                 vcam.Follow = editorCameraAim;
                 //vcam.LookAt = editorCameraAim;
             }
-            startButton.interactable = startPos != null;
+            startButton.interactable = (startPos != null);
+            Debug.Log(startButton.interactable);
+            if(startPos != null)
+            {
+                startFlagButton.interactable = !(startPos.gameObject.tag == "StartPoint");
+            }
+            else
+            {
+                startFlagButton.interactable = true;
+            }
         }
-        else if(player != null)
+        else if (player != null)
         {
             //set camera aim
-            if (vcam.Follow != player.transform)
+            if(vcam.Follow == editorCameraAim) vcam.Follow = player.transform;
+            if (vcam.Follow != player.transform && SceneManager.GetActiveScene().name != "Learn" )
             {
                 vcam.Follow = player.transform;
                 //vcam.LookAt = player.transform;
             }
         }
         //set tools pad active
-        partsPadAni.SetBool("showPad",isEditMode&&isFileLoaded);
+        partsPadAni.SetBool("showPad", isEditMode && isFileLoaded);
     }
     public void StartPlaying()
     {
         if (startPos == null)
             return;
-        player = Instantiate(playerPrefab,startPos.position, startPos.rotation);
+        player = Instantiate(playerPrefab, startPos.position, startPos.rotation);
         playerInfo.ChangeHealthPoint(100);
         isEditMode = false;
     }
@@ -80,6 +95,16 @@ public class GameManager : MonoBehaviour
     {
         isEditMode = true;
         Destroy(player);
+        
+    }
+    public void ClearCheckPoints()
+    {
+        foreach (GameObject checkPoint in checkedCheckPoints)
+        {
+            checkPoint.GetComponent<CheckPointFlag>().SwitchFlagState(false);
+        }
+        checkedCheckPoints.Clear();
+        startPos = startPoint;
     }
     void VCamraMove()
     {
@@ -94,10 +119,10 @@ public class GameManager : MonoBehaviour
         bool IsSave = false;
         if (active)
         {
-            saveManager.Save(out IsSave);
+            //saveManager.Save(out IsSave);
             //saveManager.DeleteBuildings();
         }
-        if (!IsSave&&active) return;
+        //if (!IsSave&&active) return;
         isFileLoaded = !active;
         menu.SetActive(active);
         playerInfoUI.SetActive(!active);

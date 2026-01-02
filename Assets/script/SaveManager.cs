@@ -44,7 +44,7 @@ public class SaveManager : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             string name = transform.GetChild(i).gameObject.name;
-            SaveUnit su = new SaveUnit(name.Remove(name.Length - 7, 7), transform.GetChild(i).position);//添加地图建筑
+            SaveUnit su = new SaveUnit(name.Replace("(Clone)",""), transform.GetChild(i).position,GetFlipX(transform.GetChild(i).gameObject));//添加地图建筑
             mapdatas.Add(su);
         }
     }
@@ -57,6 +57,7 @@ public class SaveManager : MonoBehaviour
                 if (su.partName == part.name)
                 {
                     GameObject newPart = Instantiate(part, new Vector3(su.x, su.y, su.z), transform.rotation, transform);
+                    newPart.transform.localScale = new Vector3(su.flipX, 1, 1);
                     bm.builtParts.Add(newPart);
                     break;
                 }
@@ -152,6 +153,10 @@ public class SaveManager : MonoBehaviour
     {
         Application.Quit();
     }
+    public float GetFlipX(GameObject target)
+    {
+        return target.transform.localScale.x;
+    }
 }
 
 [System.Serializable]
@@ -161,12 +166,14 @@ public class SaveUnit
     public float x;
     public float y;
     public float z;
-    public SaveUnit(string pn,Vector3 pos)
+    public float flipX;
+    public SaveUnit(string pn,Vector3 pos,float flipX)
     {
         partName = pn;
         x = pos.x;
         y = pos.y;
         z = pos.z;
+        this.flipX = flipX;
     }
 }
 [System.Serializable]

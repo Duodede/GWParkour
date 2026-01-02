@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 
 [System.Serializable]
 public class rayCheck
@@ -24,6 +25,7 @@ public class LearnTextController : MonoBehaviour
     public GameObject disButton;
     public GameObject tipsSprite;
     public Text AgreeButtonText;
+    public CinemachineVirtualCamera visualCamera;
     public Text text;
     public int progress;
     public int AbutProgress;
@@ -34,6 +36,8 @@ public class LearnTextController : MonoBehaviour
     public bool flag;
     public RaycastHit2D hit;
     public SaveManager saveManager;
+    public GameManager GameManager;
+    private bool changed;
     public bool check(Vector2 pos,string name)
     {
         Debug.DrawRay(pos, Vector3.forward, Color.red);
@@ -57,6 +61,7 @@ public class LearnTextController : MonoBehaviour
         if (progress == 20) return;
         if(progress == 22)
         {
+            agreeButton.SetActive(false);
             SceneManager.LoadScene("StartScene");
         }
         progress++;
@@ -105,9 +110,10 @@ public class LearnTextController : MonoBehaviour
             case 10:
                 saveManager.fileName = "½ÌÑ§¹Ø¿¨";
                 saveManager.Load();
+                progress++;
                 break;
             case 11:
-                agreeButton.SetActive(false);  
+                agreeButton.SetActive(false);
                 panelTwo.SetActive(false);
                 break;
             case 12:
@@ -116,13 +122,18 @@ public class LearnTextController : MonoBehaviour
                 break;
             case 13:
                 if (Input.GetAxis("Horizontal") < 0) progress++;
+                break;
+            case 14:
                 tipsSprite.SetActive(true);
                 break;
             case 16:
                 panelTwo.SetActive(false);
                 panelOne.SetActive(false);
+                if(!flag)StartCoroutine(changeCam());
                 break;
+
             case 17:
+                flag = false;
                 panelOne.SetActive(true);
                 panelTwo.SetActive(true);
                 break;
@@ -133,10 +144,17 @@ public class LearnTextController : MonoBehaviour
                 agreeButton.SetActive(false);
                 panelTwo.SetActive(false);
                 panelOne.SetActive(false);
+                if (!flag) StartCoroutine(changeCam());
                 break;
             case 21:
+                flag = false;
                 panelTwo.SetActive(true);
                 panelOne.SetActive(true);
+                if (!flag && !changed)
+                {
+                    StartCoroutine(changeCam());
+                    changed = true;
+                }
                 break;
             case 22:
                 agreeButton.SetActive(true);
@@ -147,5 +165,12 @@ public class LearnTextController : MonoBehaviour
 
         }
         if(!flag)text.text = textList[progress];
+    }
+    IEnumerator changeCam()
+    {
+        visualCamera.Follow = tipsSprite.transform;
+        yield return new WaitForSeconds(1);
+        visualCamera.Follow = GameManager.player.transform;
+        flag = true;
     }
 }

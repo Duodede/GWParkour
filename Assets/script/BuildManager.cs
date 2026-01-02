@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BuildManager : MonoBehaviour
 {
@@ -36,21 +37,25 @@ public class BuildManager : MonoBehaviour
         if(prePart != null)
         {
             prePart.transform.position = intPrePos;
-            if(Input.GetButtonDown("Fire1") && !IsUsed(prePart.transform.position))
+            if(Input.GetButtonDown("Fire1") && !IsUsed(prePart.transform.position)&&!EventSystem.current.IsPointerOverGameObject())//鼠标在UI上的判断在这
             {
                 Building();
             }
-            else if(Input.GetButtonDown("Fire2") || (IsUsed(prePart.transform.position)&&Input.GetButtonDown("Fire1")) )
+            else if(Input.GetButtonDown("Fire2") || (IsUsed(prePart.transform.position)&&Input.GetButtonDown("Fire1")) ||((EventSystem.current.IsPointerOverGameObject() && Input.GetButtonDown("Fire1"))))
             {
                 Destroy(prePart);
                 prePart = null;
+            }
+            if(Input.GetKeyDown(KeyCode.O))
+            {
+                prePart.transform.localScale = new Vector3(prePart.transform.localScale.x*-1, 1, 1);
             }
         }
         else
         {
             if(Input.GetButtonDown("Fire2")&&hitInfo.collider != null && manager.isEditMode)
             {
-                if(hitInfo.collider.gameObject.tag == "Part")
+                if(hitInfo.collider.gameObject.tag == "Part"|| hitInfo.collider.gameObject.tag == "StartPoint")
                 {
                     toDeletePart = hitInfo.collider.gameObject;
                     builtParts.Remove(toDeletePart);
@@ -74,10 +79,12 @@ public class BuildManager : MonoBehaviour
         switch(editMode)
         {
             case EditMode.Single://单独放置
+                prePart.name = prePart.name.Replace("(Clone)", "");
                 builtParts.Add(prePart);
                 prePart = null;
                 break;
             case EditMode.Constant://连续放置
+                prePart.name = prePart.name.Replace("(Clone)", "");
                 builtParts.Add(prePart);
                 prePart = Instantiate(prePart, prePos, transform.rotation, partParent);
                 break;

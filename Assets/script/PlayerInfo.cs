@@ -41,13 +41,15 @@ public class PlayerInfo : MonoBehaviour
         Time.timeScale = 1f;
         deadMenu.SetActive(false);
         manager.EndPlaying();
+        manager.ClearCheckPoints();
     }
     public void ReStart()
     {
         Time.timeScale = 1f;
         healthPoint = 100;
-        deadMenu.SetActive(false);
         manager.EndPlaying();
+        deadMenu.SetActive(false);
+        manager.startPos = manager.lastCheckPoint;
         manager.StartPlaying();
     }
 }

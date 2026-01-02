@@ -17,7 +17,9 @@ public class ChangeHealthPoint : MonoBehaviour
     }
     public void Update()
     {
-        this.transform.position = new Vector3(cameraPos.position.x,cameraPos.position.y-100f,0);
+        if (cameraPos == null)
+            return;
+        this.transform.position = new Vector3(cameraPos.position.x,cameraPos.position.y-50f,0);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
